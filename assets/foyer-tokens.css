@@ -1,0 +1,199 @@
+/* ============================================================
+   FOYER • Design Tokens — colors + type
+   Source: foyer-web/index.html :root + computed type scale
+   ============================================================ */
+
+:root {
+  /* ── CORE PALETTE ─────────────────────────────────────────── */
+  --bg:       #1b1b1b;            /* canvas / page background */
+  --fg:       #eeede9;            /* primary foreground (warm off-white) */
+  --surface:  #252525;            /* raised cards, code blocks, mock surfaces */
+  --amber:    #F59E0B;            /* the sole accent — used sparingly */
+
+  /* deeper atmospheric swatches used in the WebGL gradient bg */
+  --atmos-orange: #d97706;
+  --atmos-teal:   #134e4a;
+  --atmos-ink:    #0d1216;
+
+  /* ── FOREGROUND OPACITY LADDER ────────────────────────────── */
+  /* Most "color variation" on Foyer is opacity over --fg, NOT new hues. */
+  --fg72: rgba(238,237,233,0.72); /* body / answer copy */
+  --fg65: rgba(238,237,233,0.65); /* default secondary copy */
+  --fg40: rgba(238,237,233,0.40); /* tertiary / muted copy */
+  --fg30: rgba(238,237,233,0.30); /* labels, supporting numerals */
+  --fg24: rgba(238,237,233,0.24); /* hairlines, open-state borders */
+  --fg16: rgba(238,237,233,0.16); /* hover borders */
+  --fg08: rgba(238,237,233,0.08); /* default borders, dividers */
+
+  /* ── SEMANTIC ALIASES ─────────────────────────────────────── */
+  --color-text:          var(--fg);
+  --color-text-muted:    var(--fg65);
+  --color-text-faint:    var(--fg40);
+  --color-text-label:    var(--fg30);
+  --color-border:        var(--fg08);
+  --color-border-hover:  var(--fg16);
+  --color-border-strong: var(--fg24);
+  --color-accent:        var(--amber);
+  --color-danger:        #ff5a54;       /* mute / end-call only */
+
+  /* ── TYPOGRAPHY ───────────────────────────────────────────── */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'SF Mono', 'Fira Code', 'Fira Mono', 'Roboto Mono', monospace;
+
+  /* Inter weights actually loaded by the site: 300, 400, 500, 600 */
+  --weight-light:    300;
+  --weight-regular:  400;
+  --weight-medium:   500;
+  --weight-semibold: 600;
+
+  /* fluid scale, matched 1:1 to the marketing site */
+  --type-hero:           clamp(3.5rem, 8.5vw, 8.5rem);  /* hero title */
+  --type-section-title:  clamp(2rem, 4vw, 3.5rem);      /* section h2 */
+  --type-problem:        clamp(1.8rem, 3.5vw, 3rem);    /* problem framing h2 */
+  --type-cta:            clamp(2.4rem, 5vw, 4.2rem);    /* final cta */
+  --type-body-lg:        1rem;
+  --type-body:           0.9375rem;     /* problem-after, faq-a */
+  --type-body-sm:        0.9rem;        /* feature/dash body */
+  --type-meta:           0.82rem;
+  --type-tag:            11px;          /* SECTION TAG / FEATURE NUM */
+  --type-micro:          9px;           /* mockup labels */
+  --type-code:           0.78rem;
+
+  /* tracking */
+  --tracking-tag:    0.20em;            /* uppercase labels */
+  --tracking-wide:   0.18em;            /* ticker / pricing tier */
+  --tracking-hero:  -0.03em;            /* hero title */
+  --tracking-title: -0.02em;            /* section title */
+
+  /* line-height */
+  --lh-tight:    1.0;
+  --lh-snug:     1.1;
+  --lh-normal:   1.6;
+  --lh-relaxed:  1.75;
+  --lh-loose:    1.8;
+
+  /* ── SPACING ──────────────────────────────────────────────── */
+  --container-max: 1160px;
+  --section-pad:   clamp(7rem, 12vw, 10rem); /* vertical rhythm of every section */
+  --gutter:        clamp(1.5rem, 4vw, 3rem);
+
+  /* ── RADII ────────────────────────────────────────────────── */
+  --radius-xs:   3px;     /* buttons, code-block copy */
+  --radius-sm:   4px;     /* code block */
+  --radius-md:   8px;     /* pricing card */
+  --radius-lg:  10px;     /* browser mockup */
+  --radius-xl:  24px;     /* faq item */
+  --radius-pill: 999px;   /* tickers, badges, docked widget */
+
+  /* ── ELEVATION ────────────────────────────────────────────── */
+  --shadow-card-sm:  0 12px 40px rgba(0,0,0,.10);
+  --shadow-card:     0 18px 48px rgba(0,0,0,.14);
+  --shadow-card-lg:  0 20px 56px rgba(0,0,0,.18);
+  --shadow-widget:   0 24px 70px rgba(0,0,0,0.34);
+  --shadow-amber-glow: 0 0 80px rgba(245,158,11,0.12);
+
+  /* ── MOTION ───────────────────────────────────────────────── */
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);   /* the one true ease */
+  --dur-fast:   .2s;
+  --dur-base:   .35s;
+  --dur-slow:   .45s;
+  --dur-hero:   .95s;
+}
+
+/* ── ALIASES (shorthand used in kits + previews) ────────────── */
+:root {
+  --container:  var(--container-max);
+  --section-y:  var(--section-pad);
+  --fg-04:      rgba(238,237,233,0.04);
+  --fg-08:      var(--fg08);
+  --fg-16:      var(--fg16);
+  --fg-24:      var(--fg24);
+  --fg-30:      var(--fg30);
+  --fg-40:      var(--fg40);
+  --fg-65:      var(--fg65);
+  --fg-72:      var(--fg72);
+}
+
+/* ============================================================
+   SEMANTIC ELEMENTS
+   ============================================================ */
+
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: var(--lh-normal);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* — display / hero — */
+.t-hero,
+h1.foyer {
+  font-size: var(--type-hero);
+  font-weight: var(--weight-semibold);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-hero);
+  color: var(--fg);
+}
+
+/* — section title — */
+.t-section-title,
+h2.foyer {
+  font-size: var(--type-section-title);
+  font-weight: var(--weight-medium);
+  line-height: var(--lh-snug);
+  letter-spacing: var(--tracking-title);
+  color: var(--fg);
+}
+
+/* — problem / narrative h2 — */
+.t-problem {
+  font-size: var(--type-problem);
+  font-weight: var(--weight-medium);
+  line-height: var(--lh-snug);
+  letter-spacing: var(--tracking-title);
+}
+
+/* — bracketed section tag, e.g. [ The Product ] — */
+.t-tag,
+.section-tag {
+  display: inline-block;
+  font-size: var(--type-tag);
+  font-weight: var(--weight-regular);
+  letter-spacing: var(--tracking-tag);
+  text-transform: uppercase;
+  color: var(--fg40);
+}
+
+/* — feature / step number — */
+.t-num {
+  font-size: var(--type-tag);
+  letter-spacing: var(--tracking-tag);
+  color: var(--fg30);
+  text-transform: uppercase;
+}
+
+/* — body — */
+.t-body    { font-size: var(--type-body);    color: var(--fg72); line-height: var(--lh-loose); }
+.t-body-sm { font-size: var(--type-body-sm); color: var(--fg65); line-height: var(--lh-relaxed); }
+.t-muted   { color: var(--fg40); }
+.t-meta    { font-size: var(--type-meta);    color: var(--fg40); }
+
+/* — code — */
+.t-code,
+code.foyer {
+  font-family: var(--font-mono);
+  font-size: var(--type-code);
+  color: rgba(238,237,233,.8);
+  line-height: var(--lh-relaxed);
+}
+
+/* — ticker — */
+.t-ticker {
+  font-size: 0.72rem;
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  font-weight: var(--weight-medium);
+}

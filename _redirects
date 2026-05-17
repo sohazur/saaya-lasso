@@ -1,0 +1,3 @@
+# SPA fallback — every path serves index.html so the client-side
+# router can handle /shop, /product/<id>, /checkout, etc.
+/*    /index.html   200

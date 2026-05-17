@@ -1,0 +1,28 @@
+[build]
+  # No build step — this is a static SPA. Netlify serves files
+  # directly from the repository root.
+  publish = "."
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+[[headers]]
+  for = "/saaya/*"
+  [headers.values]
+    # JSX files are transpiled in-browser by Babel; serve them as text/babel
+    # so the browser doesn't try to parse them as JS modules.
+    Cache-Control = "public, max-age=300"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/uploads/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
