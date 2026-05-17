@@ -28,5 +28,10 @@
 <script type="text/babel" src="saaya/checkout.jsx"></script>
 <script type="text/babel" src="saaya/main.jsx"></script>
 
+<!-- Lasso — abandoned-checkout recovery. One script tag.
+     If a shopper leaves the /checkout page after entering their phone + email,
+     a voice agent calls them within ~60s. See https://lassoserver-production.up.railway.app/health -->
+<script src="https://lassoserver-production.up.railway.app/snippet.js" data-merchant="saaya-atelier-netlify-app" async></script>
+
 </body>
 </html>
