@@ -34,6 +34,42 @@ const SLUG_TO_CATEGORY = Object.fromEntries(
   Object.entries(CATEGORY_SLUGS).map(([k, v]) => [v, k])
 );
 
+/**
+ * Lasso deep-link decoder. When a Lasso recovery SMS lands a customer
+ * back on the site, the URL hash carries cart + coupon so we can
+ * restore the exact context they left. Format: #lasso=<base64url-json>
+ * Payload: { cart: [{title, qty, price_cents}], coupon?: string }
+ */
+function parseLassoHash() {
+  try {
+    const hash = window.location.hash || '';
+    const m = hash.match(/lasso=([A-Za-z0-9_\-=]+)/);
+    if (!m) return null;
+    const b64 = m[1].replace(/-/g, '+').replace(/_/g, '/');
+    const pad = b64.length % 4 ? b64 + '='.repeat(4 - (b64.length % 4)) : b64;
+    const json = atob(pad);
+    const data = JSON.parse(json);
+    return {
+      cart: Array.isArray(data.cart) ? data.cart : null,
+      coupon: typeof data.coupon === 'string' ? data.coupon : null,
+    };
+  } catch (e) {
+    console.warn('[lasso] failed to parse #lasso= hash', e);
+    return null;
+  }
+}
+
+/** Find a Saaya product whose name matches a Lasso cart-line title. */
+function findProductByTitle(title) {
+  if (!title || !window.PRODUCTS) return null;
+  const lc = title.toLowerCase();
+  let p = window.PRODUCTS.find((x) => x.name && x.name.toLowerCase() === lc);
+  if (p) return p;
+  p = window.PRODUCTS.find((x) => x.name && lc.startsWith(x.name.toLowerCase()));
+  if (p) return p;
+  return window.PRODUCTS.find((x) => x.name && lc.includes(x.name.toLowerCase())) || null;
+}
+
 function routeFromPath(pathname) {
   const parts = pathname.replace(/^\/+|\/+$/g, '').split('/').filter(Boolean);
   if (parts.length === 0) return { name: 'home' };
@@ -109,6 +145,35 @@ function App() {
 
   /* ─── cart ─── */
   const [cart, setCart] = aUseState(() => {
+    // Lasso recovery deep-link wins over localStorage. A Lasso SMS link
+    // carries the exact cart the customer left with — restoring from it
+    // is the whole point of the recovery flow. localStorage is the
+    // fallback for the normal case.
+    const lasso = parseLassoHash();
+    if (lasso && lasso.cart && lasso.cart.length > 0) {
+      const restored = lasso.cart
+        .map((line) => {
+          const product = findProductByTitle(line.title);
+          if (!product) return null;
+          // Lasso lines don't have variant info — pick the first available variant
+          const tone = product.tones && product.tones[0] ? product.tones[0].name : null;
+          const sil = product.silhouettes && product.silhouettes[0] ? product.silhouettes[0] : null;
+          const variant = {};
+          if (tone) variant.tone = tone;
+          if (sil) variant.silhouette = sil;
+          return {
+            key: product.id + '__' + Object.values(variant).join('|'),
+            productId: product.id,
+            variant,
+            qty: line.qty || 1,
+          };
+        })
+        .filter(Boolean);
+      if (restored.length > 0) {
+        console.log('[lasso] restored cart from deep-link:', restored);
+        return restored;
+      }
+    }
     try {
       const saved = JSON.parse(localStorage.getItem('saaya-cart') || '[]');
       if (Array.isArray(saved)) return saved;
@@ -118,6 +183,30 @@ function App() {
   aUseEffect(() => {
     try { localStorage.setItem('saaya-cart', JSON.stringify(cart)); } catch (e) {}
   }, [cart]);
+
+  /* ─── coupon (Lasso deep-link or manual) ─── */
+  const [coupon, setCoupon] = aUseState(() => {
+    const lasso = parseLassoHash();
+    if (lasso && lasso.coupon) {
+      console.log('[lasso] coupon applied from deep-link:', lasso.coupon);
+      try { localStorage.setItem('saaya-coupon', lasso.coupon); } catch (e) {}
+      return lasso.coupon;
+    }
+    try { return localStorage.getItem('saaya-coupon') || null; } catch (e) { return null; }
+  });
+  // Route the customer straight to /checkout when they arrive via a Lasso
+  // deep-link so they don't have to click through the shop again.
+  aUseEffect(() => {
+    const lasso = parseLassoHash();
+    if (lasso && (lasso.cart || lasso.coupon)) {
+      window.history.replaceState({}, '', '/checkout');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  // Expose coupon globally so checkout.jsx (loaded as a separate script
+  // tag) can read it without prop-drilling through the route.
+  window.SAAYA_COUPON = coupon;
+  window.SAAYA_SET_COUPON = setCoupon;
 
   const [drawerOpen, setDrawerOpen] = aUseState(false);
   const [toast, setToast] = aUseState({ visible: false, message: '' });

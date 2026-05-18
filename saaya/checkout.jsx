@@ -623,8 +623,12 @@ function CheckoutPage({ items, products, navigate, formatPrice, clearCart }) {
   });
   const [payment, setPayment] = cUseState('card');
   const [card, setCard] = cUseState({ number: '', expiry: '', cvc: '', name: '' });
-  const [promo, setPromo] = cUseState('');
-  const [promoApplied, setPromoApplied] = cUseState(null);
+  // Lasso recovery deep-link delivers the coupon via window.SAAYA_COUPON
+  // (set by main.jsx from #lasso= hash). Auto-apply on mount so the user
+  // sees the discount instantly without retyping it.
+  const lassoCoupon = typeof window !== 'undefined' ? window.SAAYA_COUPON : null;
+  const [promo, setPromo] = cUseState(lassoCoupon || '');
+  const [promoApplied, setPromoApplied] = cUseState(lassoCoupon ? lassoCoupon.toUpperCase() : null);
   const [orderId, setOrderId] = cUseState(null);
   const [logExpanded, setLogExpanded] = cUseState(true);
 
@@ -717,10 +721,14 @@ function CheckoutPage({ items, products, navigate, formatPrice, clearCart }) {
 
   const applyPromo = () => {
     const code = promo.trim().toUpperCase();
-    if (code === 'SAAYA10' && !promoApplied) {
-      setPromoApplied('SAAYA10');
+    if (!code || promoApplied) return;
+    // Saaya's hardcoded code + any Lasso-issued recovery coupon
+    // (LASSO*, SAAYA*). For the demo we accept the broader set so the
+    // recovery flow always succeeds end-to-end.
+    if (code === 'SAAYA10' || /^(LASSO|SAAYA)[A-Z0-9]{0,16}$/.test(code)) {
+      setPromoApplied(code);
       log('order.promo', `${code} applied · 10% off`, { code, percent: 10 });
-    } else if (code) {
+    } else {
       log('order.promo_invalid', `Tried ${code} — not recognised`, { code });
     }
   };
