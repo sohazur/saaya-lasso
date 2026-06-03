@@ -182,6 +182,20 @@ function App() {
   });
   aUseEffect(() => {
     try { localStorage.setItem('saaya-cart', JSON.stringify(cart)); } catch (e) {}
+    // Expose the cart to the Foyer recovery widget so an abandoned-checkout
+    // call knows the real items (not a DOM guess). Shape: window.foyerCart =
+    // { lines: [{ title, quantity, priceCents }], totalCents }.
+    try {
+      const lines = (cart || []).map((l) => ({
+        title: l.title,
+        quantity: l.qty || 1,
+        priceCents: (l.price_cents || 0) * (l.qty || 1),
+      }));
+      window.foyerCart = {
+        lines,
+        totalCents: lines.reduce((sum, l) => sum + (l.priceCents || 0), 0),
+      };
+    } catch (e) {}
   }, [cart]);
 
   /* ─── coupon (Lasso deep-link or manual) ─── */
