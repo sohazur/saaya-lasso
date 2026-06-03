@@ -279,18 +279,21 @@ function StepContact({ contact, setContact, log, onContinue, formatPrice, deposi
       <div className="field-row">
         <div className="field">
           <label>First name *</label>
-          <input value={contact.firstName} onChange={(e) => update('firstName', e.target.value)}
+          <input name="firstName" autoComplete="given-name"
+                 value={contact.firstName} onChange={(e) => update('firstName', e.target.value)}
                  onBlur={trackField('firstName')} placeholder="Zara" />
         </div>
         <div className="field">
           <label>Last name *</label>
-          <input value={contact.lastName} onChange={(e) => update('lastName', e.target.value)}
+          <input name="lastName" autoComplete="family-name"
+                 value={contact.lastName} onChange={(e) => update('lastName', e.target.value)}
                  onBlur={trackField('lastName')} placeholder="Hussain" />
         </div>
       </div>
       <div className="field">
         <label>Email *</label>
-        <input type="email" value={contact.email} onChange={(e) => update('email', e.target.value)}
+        <input type="email" name="email" autoComplete="email"
+               value={contact.email} onChange={(e) => update('email', e.target.value)}
                onBlur={trackField('email')} placeholder="you@yourdomain.com" />
       </div>
       <div className="field-row">
@@ -311,7 +314,8 @@ function StepContact({ contact, setContact, log, onContinue, formatPrice, deposi
         </div>
         <div className="field" style={{ flex: 1 }}>
           <label>Phone *</label>
-          <input type="tel" value={contact.phone} onChange={(e) => update('phone', e.target.value)}
+          <input type="tel" name="phone" autoComplete="tel"
+                 value={contact.phone} onChange={(e) => update('phone', e.target.value)}
                  onBlur={trackField('phone')} placeholder="300 1234567" />
         </div>
       </div>
