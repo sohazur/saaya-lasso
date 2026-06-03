@@ -209,6 +209,9 @@ function App() {
       window.foyerCart = {
         lines,
         totalCents: lines.reduce((sum, l) => sum + (l.priceCents || 0), 0),
+        // Saaya prices everything in Pakistani rupees — tell the recovery
+        // widget so the call + dashboard speak PKR, not dollars.
+        currency: 'PKR',
       };
     } catch (e) {}
   }, [cart]);
