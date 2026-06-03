@@ -28,10 +28,11 @@
 <script type="text/babel" src="saaya/checkout.jsx"></script>
 <script type="text/babel" src="saaya/main.jsx"></script>
 
-<!-- Lasso — abandoned-checkout recovery. One script tag.
-     If a shopper leaves the /checkout page after entering their phone + email,
-     a voice agent calls them within ~60s. See https://lassoserver-production.up.railway.app/health -->
-<script src="https://lassoserver-production.up.railway.app/snippet.js" data-merchant="saaya-netlify-app" async></script>
+<!-- Foyer — voice widget + abandoned-checkout recovery. ONE script tag.
+     If a shopper leaves /checkout after entering their phone, the agent calls
+     them back within ~60s to recover the sale (when Recovery is enabled for
+     this agent in the Foyer dashboard). Replaces the old Lasso prototype. -->
+<script src="https://api.foyer.ink/static/widget.js" data-agent-id="tl_8f81022dcf63" data-server="https://api.foyer.ink" async></script>
 
 </body>
 </html>
