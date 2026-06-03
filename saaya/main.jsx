@@ -185,12 +185,27 @@ function App() {
     // Expose the cart to the Foyer recovery widget so an abandoned-checkout
     // call knows the real items (not a DOM guess). Shape: window.foyerCart =
     // { lines: [{ title, quantity, priceCents }], totalCents }.
+    //
+    // Cart lines are stored as { key, productId, variant, qty } — the title
+    // and price live on the PRODUCTS catalog, keyed by productId. Resolve each
+    // line through the catalog so the recovery call names the real piece
+    // (e.g. "Zara — Bridal Lehenga (XS · Oxblood)") instead of an empty string.
+    // PRODUCTS.price is in whole PKR rupees, so multiply by 100 for cents.
     try {
-      const lines = (cart || []).map((l) => ({
-        title: l.title,
-        quantity: l.qty || 1,
-        priceCents: (l.price_cents || 0) * (l.qty || 1),
-      }));
+      const catalog = Array.isArray(window.PRODUCTS) ? window.PRODUCTS : [];
+      const lines = (cart || []).map((l) => {
+        const p = catalog.find((x) => x.id === l.productId);
+        const baseTitle = p
+          ? (p.type ? `${p.name} — ${p.type}` : p.name)
+          : (l.title || l.productId || 'Item');
+        const variantStr = l.variant
+          ? Object.values(l.variant).filter(Boolean).join(' · ')
+          : '';
+        const title = variantStr ? `${baseTitle} (${variantStr})` : baseTitle;
+        const qty = l.qty || 1;
+        const unitCents = p && typeof p.price === 'number' ? p.price * 100 : 0;
+        return { title, quantity: qty, priceCents: unitCents * qty };
+      });
       window.foyerCart = {
         lines,
         totalCents: lines.reduce((sum, l) => sum + (l.priceCents || 0), 0),
